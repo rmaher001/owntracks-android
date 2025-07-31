@@ -1,4 +1,19 @@
-# OwnTracks for Android
+# OwnTracks for Android with Bluetooth Auto Mode Switching
+
+This is a fork of the OwnTracks Android app that adds **Bluetooth-based automatic mode switching** for battery conservation.
+
+## Fork Features
+
+This fork adds the ability to automatically switch monitoring modes based on Bluetooth connections:
+- **Save battery** by using Quiet/Manual mode when stationary
+- **Automatically switch to Move mode** when connecting to your car's Bluetooth
+- **Return to battery-saving mode** when you leave your vehicle
+
+[Download the latest APK from Releases](https://github.com/rmaher001/owntracks-android/releases)
+
+---
+
+*Original OwnTracks README follows:*
 
 This is the OwnTracks Android app. See our [booklet](http://owntracks.org/booklet/features/android/) for details on how to get started with OwnTracks, as well some details about behaviour specific to the Android app.
 
