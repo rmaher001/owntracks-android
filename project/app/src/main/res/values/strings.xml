@@ -151,6 +151,11 @@ To allow this, please enable Location in the device settings."</string>
     <string name="preferencesCategoryAdvancedLocator">"Locator"</string>
     <string name="preferencesCategoryAdvancedMisc">"Misc"</string>
     <string name="preferencesCategoryAdvancedServices">"Services"</string>
+    <string name="preferencesBluetoothAutoMode">"Bluetooth Auto Mode"</string>
+    <string name="preferencesBluetoothModeSwitchTitle">"Auto-switch to Move mode"</string>
+    <string name="preferencesBluetoothModeSwitchSummary">"Automatically switch to Move mode when connecting to selected Bluetooth devices"</string>
+    <string name="preferencesBluetoothDevice">"Bluetooth device"</string>
+    <string name="preferencesBluetoothNoPairedDevices">"No paired devices found"</string>
     <string name="preferencesCategoryConnectionEndpoint">"Endpoint"</string>
     <string name="preferencesCategoryConnectionIdentification">"Identification"</string>
     <string name="preferencesCategoryConnectionCredentials">"Credentials"</string>

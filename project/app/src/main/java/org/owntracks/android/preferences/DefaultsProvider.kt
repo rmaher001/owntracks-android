@@ -43,6 +43,9 @@ interface DefaultsProvider {
       Preferences::mode -> ConnectionMode.MQTT
       Preferences::monitoring -> MonitoringMode.Significant
       Preferences::moveModeLocatorInterval -> 10
+      Preferences::bluetoothModeSwitch -> false
+      Preferences::bluetoothModeSwitchDevice -> ""
+      Preferences::previousMonitoringMode -> ""
       Preferences::mqttProtocolLevel -> MqttProtocolLevel.MQTT_3_1
       Preferences::notificationEvents -> true
       Preferences::notificationGeocoderErrors -> true

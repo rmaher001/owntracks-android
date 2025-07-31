@@ -58,6 +58,21 @@
     </androidx.preference.PreferenceCategory>
     <androidx.preference.PreferenceCategory
         app:iconSpaceReserved="false"
+        app:title="@string/preferencesBluetoothAutoMode">
+        <androidx.preference.SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="bluetoothModeSwitch"
+            app:summary="@string/preferencesBluetoothModeSwitchSummary"
+            app:title="@string/preferencesBluetoothModeSwitchTitle" />
+        <androidx.preference.ListPreference
+            app:iconSpaceReserved="false"
+            app:key="bluetoothModeSwitchDevice"
+            app:title="@string/preferencesBluetoothDevice"
+            app:dependency="bluetoothModeSwitch"
+            app:useSimpleSummaryProvider="true" />
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory
+        app:iconSpaceReserved="false"
         app:title="@string/preferencesCategoryAdvancedEncryption">
         <ValidatingEditTextPreference
             android:maxLength="32"

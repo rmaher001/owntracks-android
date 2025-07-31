@@ -41,6 +41,7 @@ lmdb-kt = "0.1.1"
 materialdrawer = "6.1.2"
 materialize = "1.2.1"
 mockito-kotlin = "5.4.0"
+mockk = "1.13.9"
 okhttp = "4.12.0"
 osmdroid = "6.1.20"
 paho-mqtt = "1.2.5"
@@ -130,6 +131,8 @@ widgets-materialize = { module = "com.mikepenz:materialize", version.ref = "mate
 
 # Testing
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 kmqtt-broker = { module = "io.github.davidepianca98:kmqtt-broker-jvm", version.ref = "kmqtt" }
 kmqtt-common = { module = "io.github.davidepianca98:kmqtt-common-jvm", version.ref = "kmqtt" }
 barista = { module = "com.adevinta.android:barista", version.ref = "barista" }
