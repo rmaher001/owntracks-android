@@ -284,6 +284,7 @@ dependencies {
   androidTestImplementation(libs.okhttp.mockwebserver)
   androidTestImplementation(libs.bundles.kmqtt)
   androidTestImplementation(libs.square.leakcanary)
+  androidTestImplementation(libs.mockk.android)
 
   androidTestUtil(libs.bundles.androidx.test.util)
 

@@ -6,6 +6,7 @@ import android.app.AlarmManager
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Notification
 import android.app.PendingIntent
+import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -91,6 +92,7 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
   private var lastLocation: Location? = null
   private val activeNotifications = mutableListOf<Spannable>()
   private var hasBeenStartedExplicitly = false
+  private var bluetoothReceiverRegistered = false
 
   @Inject lateinit var preferences: Preferences
 
@@ -99,6 +101,8 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
   @Inject lateinit var locationProcessor: LocationProcessor
 
   @Inject lateinit var geocoderProvider: GeocoderProvider
+  
+  @Inject lateinit var bluetoothModeReceiver: BluetoothModeReceiver
 
   @Inject lateinit var contactsRepo: ContactsRepo
 
@@ -205,6 +209,12 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
           addAction(Intent.ACTION_SCREEN_OFF)
         },
     )
+
+    
+    // Register Bluetooth receiver if feature is enabled
+    if (preferences.bluetoothModeSwitch) {
+      registerBluetoothReceiver()
+    }
     powerStateLogger.logPowerState("serviceOnCreate")
 
     lifecycleScope.launch {
@@ -258,6 +268,7 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
     stopForeground(STOP_FOREGROUND_REMOVE)
     unregisterReceiver(powerBroadcastReceiver)
     significantMotionSensor.cancel()
+    unregisterBluetoothReceiver()
     preferences.unregisterOnPreferenceChangedListener(this)
     messageProcessor.stopSendingMessages()
     super.onDestroy()
@@ -768,6 +779,13 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
       setupLocationRequest()
       ongoingNotification.setMonitoringMode(preferences.monitoring)
     }
+    if (properties.contains(Preferences::bluetoothModeSwitch.name)) {
+      if (preferences.bluetoothModeSwitch) {
+        registerBluetoothReceiver()
+      } else {
+        unregisterBluetoothReceiver()
+      }
+    }
     if (properties.intersect(PREFERENCES_THAT_WIPE_QUEUE_AND_CONTACTS).isNotEmpty()) {
       lifecycleScope.launch { contactsRepo.clearAll() }
     }
@@ -888,6 +906,36 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
                 } +
                 "isInteractive=${powerManager.isInteractive} isIgnoringBatteryOptimizations=${powerManager.isIgnoringBatteryOptimizations(applicationContext.packageName)}"
         )
+      }
+    }
+  }
+  
+  private fun registerBluetoothReceiver() {
+    if (!bluetoothReceiverRegistered) {
+      try {
+        registerReceiver(
+          bluetoothModeReceiver,
+          IntentFilter().apply {
+            addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+          }
+        )
+        bluetoothReceiverRegistered = true
+        Timber.d("Bluetooth receiver registered")
+      } catch (e: Exception) {
+        Timber.e(e, "Failed to register Bluetooth receiver")
+      }
+    }
+  }
+  
+  private fun unregisterBluetoothReceiver() {
+    if (bluetoothReceiverRegistered) {
+      try {
+        unregisterReceiver(bluetoothModeReceiver)
+        bluetoothReceiverRegistered = false
+        Timber.d("Bluetooth receiver unregistered")
+      } catch (e: Exception) {
+        Timber.e(e, "Failed to unregister Bluetooth receiver")
       }
     }
   }
