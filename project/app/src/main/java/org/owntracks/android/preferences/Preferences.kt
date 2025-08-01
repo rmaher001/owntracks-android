@@ -237,9 +237,9 @@ constructor(
 
   @Preference var moveModeLocatorInterval: Int by preferencesStore
 
-  @Preference(exportModeHttp = false, exportModeMqtt = false) var bluetoothModeSwitch: Boolean by preferencesStore
+  @Preference var bluetoothModeSwitch: Boolean by preferencesStore
 
-  @Preference(exportModeHttp = false, exportModeMqtt = false) var bluetoothModeSwitchDevice: String by preferencesStore
+  @Preference var bluetoothModeSwitchDevice: String by preferencesStore
 
   @Preference(exportModeHttp = false, exportModeMqtt = false) var previousMonitoringMode: String by preferencesStore
 

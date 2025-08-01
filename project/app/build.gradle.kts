@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import kotlin.io.path.isRegularFile
+import java.util.Properties
 
 plugins {
   id("com.android.application")
@@ -13,8 +14,17 @@ plugins {
 
 apply<EspressoMetadataEmbeddingPlugin>()
 
+// Load local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+  localProperties.load(localPropertiesFile.inputStream())
+}
+
 val googleMapsAPIKey =
-    System.getenv("GOOGLE_MAPS_API_KEY")?.toString() ?: extra.get("google_maps_api_key")?.toString()
+    System.getenv("GOOGLE_MAPS_API_KEY")?.toString() 
+    ?: localProperties.getProperty("google_maps_api_key")
+    ?: extra.properties["google_maps_api_key"]?.toString()
     ?: "PLACEHOLDER_API_KEY"
 
 val gmsImplementation: Configuration by configurations.creating
