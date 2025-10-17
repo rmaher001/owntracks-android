@@ -27,7 +27,7 @@ This is the OwnTracks Android app. See our [booklet](http://owntracks.org/bookle
 
 * `gms`: This is the build published to the [Google Play Store](https://play.google.com/store/apps/details?id=org.owntracks.android). It links to and requires the Google Play Services libraries for location (using the Google location APIs), as well as the Google Maps SDK for drawing the main map.
 * `oss`: This is an "un-Googled" build, which does not require or depend on Google Play Services. It uses the built-in android location capabilities and defaults to [OpenStreetMap](https://www.openstreetmap.org/) for the main map. Available via [F-Droid](https://f-droid.org/packages/org.owntracks.android/).
-
+r
 Both flavours are published as an APK to Github releases.
 
 ### Signing keys
