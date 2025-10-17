@@ -86,7 +86,7 @@ import org.owntracks.android.ui.map.MapActivity
 import timber.log.Timber
 
 @AndroidEntryPoint
-class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeListener {
+class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeListener, LocationStuckDetector.LocationUpdateCallback {
   private var lastLocation: Location? = null
   private val activeNotifications = mutableListOf<Spannable>()
   private var hasBeenStartedExplicitly = false
@@ -99,8 +99,10 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
   @Inject lateinit var locationProcessor: LocationProcessor
 
   @Inject lateinit var geocoderProvider: GeocoderProvider
-  
+
   @Inject lateinit var bluetoothModeReceiver: BluetoothModeReceiver
+
+  @Inject lateinit var locationStuckDetector: LocationStuckDetector
 
   @Inject lateinit var contactsRepo: ContactsRepo
 
@@ -129,7 +131,7 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
   private val callbackForReportType =
       mutableMapOf<MessageLocation.ReportType, Lazy<LocationCallbackWithReportType>>().apply {
         MessageLocation.ReportType.entries.forEach {
-          this[it] = lazy { LocationCallbackWithReportType(it, locationProcessor, lifecycleScope) }
+          this[it] = lazy { LocationCallbackWithReportType(it, locationProcessor, lifecycleScope, locationStuckDetector) }
         }
       }
 
@@ -192,6 +194,12 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
     if (preferences.bluetoothModeSwitch) {
       registerBluetoothReceiver()
     }
+
+    // Initialize and start location stuck detector
+    locationStuckDetector.setCallback(this)
+    locationStuckDetector.startMonitoring(lifecycleScope)
+    Timber.i("Location stuck detector initialized and started")
+
     powerStateLogger.logPowerState("serviceOnCreate")
 
     lifecycleScope.launch {
@@ -244,6 +252,7 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
     stopForeground(STOP_FOREGROUND_REMOVE)
     unregisterReceiver(powerBroadcastReceiver)
     unregisterBluetoothReceiver()
+    locationStuckDetector.stopMonitoring()
     preferences.unregisterOnPreferenceChangedListener(this)
     messageProcessor.stopSendingMessages()
     super.onDestroy()
@@ -649,7 +658,7 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
     }
   }
 
-  fun reInitializeLocationRequests() {
+  override fun reInitializeLocationRequests() {
     Timber.v("Reinitializing location requests")
     runThingsOnOtherThreads.postOnServiceHandlerDelayed(
         {
@@ -664,6 +673,14 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
         },
         0)
   }
+
+  // LocationStuckDetector.LocationUpdateCallback implementation
+  override fun requestLocationUpdate(reportType: MessageLocation.ReportType) {
+    Timber.i("Location stuck detector requesting location update with report type: $reportType")
+    requestOnDemandLocationUpdate(reportType)
+  }
+
+  // Note: reInitializeLocationRequests() already exists above, no need to override
 
   private val localServiceBinder: IBinder = LocalBinder()
 
@@ -698,7 +715,8 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
   class LocationCallbackWithReportType(
       private val reportType: MessageLocation.ReportType,
       private val locationProcessor: LocationProcessor,
-      private val lifecycleCoroutineScope: LifecycleCoroutineScope
+      private val lifecycleCoroutineScope: LifecycleCoroutineScope,
+      private val locationStuckDetector: LocationStuckDetector? = null
   ) : LocationCallback {
 
     override fun onLocationAvailability(locationAvailability: LocationAvailability) {
@@ -716,6 +734,8 @@ class BackgroundService : LifecycleService(), Preferences.OnPreferenceChangeList
 
     private fun onLocationChanged(location: Location, reportType: MessageLocation.ReportType) {
       Timber.v("backgroundservice location update received: $location, report type $reportType")
+      // Notify the stuck detector that we received a location
+      locationStuckDetector?.onLocationReceived(location)
       lifecycleCoroutineScope.launch { locationProcessor.onLocationChanged(location, reportType) }
     }
 

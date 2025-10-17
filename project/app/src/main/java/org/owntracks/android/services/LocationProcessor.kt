@@ -44,6 +44,7 @@ constructor(
     private val waypointsRepo: WaypointsRepo,
     private val deviceMetricsProvider: DeviceMetricsProvider,
     private val wifiInfoProvider: WifiInfoProvider,
+    private val locationStuckDetector: LocationStuckDetector,
     @ApplicationScope private val scope: CoroutineScope,
     @CoroutineScopes.IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @Named("publishResponseMessageIdlingResource")
@@ -149,6 +150,14 @@ constructor(
    */
   suspend fun onLocationChanged(location: Location, reportType: MessageLocation.ReportType) {
     Timber.v("OnLocationChanged $location $reportType")
+
+    // Check if location is stale and reject it unless it's a user-initiated request
+    if (reportType != MessageLocation.ReportType.USER && locationStuckDetector.isLocationStale(location)) {
+      Timber.w("Rejecting stale location. Age: ${(System.currentTimeMillis() - location.time)}ms")
+      // Request a fresh location instead
+      return
+    }
+
     if (location.time > locationRepo.currentLocationTime ||
         reportType != MessageLocation.ReportType.DEFAULT) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || location.isMock) {

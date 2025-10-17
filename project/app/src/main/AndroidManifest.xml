@@ -31,6 +31,10 @@
 
     <!-- To autostart the app once the device boots -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- To autostart even before device is unlocked (Direct Boot) -->
+    <uses-permission android:name="android.permission.RECEIVE_LOCKED_BOOT_COMPLETED" />
+    <!-- To request battery optimization exemption for ADB installs -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
 
     <!-- Not actively requested. Has to be enabled manually. Access to broker certificates in private storage on older APIs or on devices not providing files through content:// URIs -->
@@ -210,9 +214,13 @@
         <receiver
             android:name=".support.receiver.StartBackgroundServiceReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:directBootAware="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
