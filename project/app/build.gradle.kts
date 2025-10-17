@@ -102,6 +102,22 @@ android {
       }
     }
   }
+  
+  // Custom signing config for our Bluetooth fork
+  if (!System.getenv("BLUETOOTH_KEYSTORE_PASS").isNullOrBlank()) {
+    signingConfigs {
+      create("bluetooth") {
+        keyAlias = "owntracks-bluetooth"
+        keyPassword = System.getenv("BLUETOOTH_KEYSTORE_PASS")
+        storeFile = file("../../owntracks-bluetooth-release.jks")
+        storePassword = System.getenv("BLUETOOTH_KEYSTORE_PASS")
+        enableV1Signing = true
+        enableV2Signing = true
+        enableV3Signing = true
+        enableV4Signing = true
+      }
+    }
+  }
 
   buildTypes {
     named("release") {
@@ -114,7 +130,7 @@ android {
           ),
       )
       resValue("string", "GOOGLE_MAPS_API_KEY", googleMapsAPIKey)
-      signingConfig = signingConfigs.findByName("release")
+      signingConfig = signingConfigs.findByName("bluetooth") ?: signingConfigs.findByName("release")
     }
 
     named("debug") {
