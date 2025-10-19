@@ -30,7 +30,7 @@ class StartBackgroundServiceReceiver : BroadcastReceiver() {
     const val BOOT_START_NOTIFICATION_ID = 9999
 
     fun enable(context: Context) {
-      val receiver = ComponentName(context, BroadcastReceiver::class.java)
+      val receiver = ComponentName(context, StartBackgroundServiceReceiver::class.java)
       context.packageManager.setComponentEnabledSetting(
           receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
     }

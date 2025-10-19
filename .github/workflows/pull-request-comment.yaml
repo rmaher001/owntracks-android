@@ -22,11 +22,11 @@ jobs:
       check-id: ${{ steps.create-pr-check.outputs.check_id }}
     if: |
       github.event.issue.pull_request &&
-      (startsWith(github.event.comment.body,'/run-tests') || startsWith(github.event.comment.body,'/run-espresso-tests')) &&
+      (startsWith(github.event.comment.body,'/run-tests') || startsWith(github.event.comment.body,'/run-espresso-tests') || startsWith(github.event.comment.body,'/run-small-espresso-tests')) &&
       github.event.comment.author_association == 'MEMBER'
     steps:
       - name: Get PR info
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         id: get-pr-info
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -46,7 +46,7 @@ jobs:
               sha: pr.head.sha
             };
       - name: Thumbs up!
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ github.event.comment.id }}
           reactions: '+1'
@@ -71,6 +71,21 @@ jobs:
     with:
       ref: ${{ needs.check-comment.outputs.sha }}
     secrets: inherit
+  small-espresso-test:
+    name: Espresso Test
+    if: ${{ startsWith(github.event.comment.body, '/run-small-espresso-tests') }}
+    needs:
+      - build-test-lint
+    permissions:
+      contents: read
+      checks: write
+    uses: ./.github/workflows/espresso.yaml
+    with:
+      ref: ${{ github.sha }}
+      test-annotation: androidx.test.filters.SmallTest
+      shards: 1
+    secrets: inherit
+
   espresso-test:
     name: Espresso Test
     permissions:
@@ -82,6 +97,7 @@ jobs:
     secrets: inherit
     needs:
       - build-test-lint
+    if: ${{ startsWith(github.event.comment.body, '/run-espresso-tests') }}
   pr-checkpoint-status:
     name: "PR Checkpoint Status"
     runs-on: ubuntu-latest
@@ -91,7 +107,7 @@ jobs:
       checks: write
       issues: write
       pull-requests: write
-    needs: [check-comment, build-test-lint, espresso-test]
+    needs: [check-comment, build-test-lint, espresso-test, small-espresso-test]
     if: ${{ always() && needs.check-comment.result == 'success' }}
     steps:
       - name: Set status check
@@ -106,7 +122,7 @@ jobs:
           output: |
             {"title":"Testing", "summary":"Build & Test complete", "text":"Build & Test complete"}
       - name: Add a comment linking to the workflow
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |

@@ -1,17 +1,23 @@
 set dotenv-load := true
-gradlec := "./project/gradlew -p project"
+gradlec := "./project/gradlew -p project --scan"
 
 default:
     @just --list
 
 build:
+    {{gradlec}} assembleDebug
+
+build-all:
     {{gradlec}} assembleDebug app:assembleAndroidTest app:assembleGmsDebugUnitTest assembleRelease
 
 unit-test:
     {{gradlec}} app:testGmsDebugUnitTest
 
 espresso:
-    {{gradlec}} app:createGmsDebugCoverageReport
+    {{gradlec}} app:createGmsDebugCoverageReport -Pandroid.testInstrumentationRunnerArguments.annotation=*
+
+small-espresso:
+    {{gradlec}} clean createGmsDebugCoverageReport -Pandroid.testInstrumentationRunnerArguments.annotation=androidx.test.filters.SmallTest
 
 single-espresso:
     {{gradlec}} clean createGmsDebugCoverageReport -Pandroid.testInstrumentationRunnerArguments.annotation=org.owntracks.android.testutils.JustThisTestPlease
@@ -38,7 +44,7 @@ local-stack:
     cd util/mqtt-local && podman-compose up
 
 mqtt-subscribe:
-    mosquitto_sub -L mqtt://localhost/owntracks/# -u test -P test
+    mosquitto_sub -v -L mqtt://localhost/owntracks/# -u test -P test
 
 wipe-device:
     adb uninstall org.owntracks.android; adb uninstall org.owntracks.android.debug; adb uninstall androidx.test.orchestrator ; adb uninstall androidx.test.services; adb uninstall androidx.test.tools.crawler; adb uninstall androidx.test.tools.crawler.stubapp; echo "done"

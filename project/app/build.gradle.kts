@@ -5,7 +5,6 @@ import java.util.Properties
 plugins {
   id("com.android.application")
   id("com.google.dagger.hilt.android")
-  id("com.github.triplet.play")
   kotlin("android")
   kotlin("kapt")
   alias(libs.plugins.ktfmt)
@@ -22,35 +21,35 @@ if (localPropertiesFile.exists()) {
 }
 
 val googleMapsAPIKey =
-    System.getenv("GOOGLE_MAPS_API_KEY")?.toString() 
+    System.getenv("GOOGLE_MAPS_API_KEY")?.toString()
     ?: localProperties.getProperty("google_maps_api_key")
     ?: extra.properties["google_maps_api_key"]?.toString()
     ?: "PLACEHOLDER_API_KEY"
 
 val gmsImplementation: Configuration by configurations.creating
 
-val packageVersionCode: Int = System.getenv("VERSION_CODE")?.toInt() ?: 420503000
+val packageVersionCode: Int = System.getenv("VERSION_CODE")?.toInt() ?: 420505000
 val manuallySetVersion: Boolean = System.getenv("VERSION_CODE") != null
-val enablePlayPublishing: Boolean =
-    !System.getenv("ANDROID_PUBLISHER_CREDENTIALS").isNullOrBlank()
+val enablePlayPublishing: Boolean = !System.getenv("ANDROID_PUBLISHER_CREDENTIALS").isNullOrBlank()
 
 android {
-  compileSdk = 34
+  compileSdk = 36
   namespace = "org.owntracks.android"
 
   defaultConfig {
     applicationId = "org.owntracks.android"
     minSdk = 24
-    targetSdk = 34
+    targetSdk = 36
 
     versionCode = packageVersionCode
-    versionName = "2.5.3"
+    versionName = "2.5.5"
 
-    val localeCount = fileTree("src/main/res/").map {
-      it.toPath()
-    }.count { it.isRegularFile() && it.fileName.toString() == "strings.xml" }
+    val localeCount = fileTree("src/main/res/").matching { include("**/strings.xml") }.files.size
+
     buildConfigField(
-        "int", "TRANSLATION_COUNT", localeCount.toString(),
+        "int",
+        "TRANSLATION_COUNT",
+        localeCount.toString(),
     )
 
     testInstrumentationRunner = "org.owntracks.android.testutils.hilt.CustomTestRunner"
@@ -64,15 +63,11 @@ android {
         ),
     )
     javaCompileOptions {
-      annotationProcessorOptions {
-        arguments["room.schemaLocation"] = "$projectDir/schemas"
-      }
+      annotationProcessorOptions { arguments["room.schemaLocation"] = "$projectDir/schemas" }
     }
   }
 
-  androidResources {
-    generateLocaleConfig = true
-  }
+  androidResources { generateLocaleConfig = true }
 
   if (!System.getenv("KEYSTORE_PASSPHRASE").isNullOrBlank()) {
     signingConfigs {
@@ -142,9 +137,7 @@ android {
     viewBinding = true
   }
 
-  dataBinding {
-    addKtx = true
-  }
+  dataBinding { addKtx = true }
 
   packaging {
     resources.excludes.add("META-INF/*")
@@ -159,21 +152,19 @@ android {
     abortOnError = false
     disable.addAll(
         setOf(
-            "TypographyFractions", "TypographyQuotes", "Typos",
+            "TypographyFractions",
+            "TypographyQuotes",
+            "Typos",
         ),
     )
   }
   testOptions {
     execution = "ANDROIDX_TEST_ORCHESTRATOR"
     animationsDisabled = true
-    unitTests {
-      isIncludeAndroidResources = true
-    }
+    unitTests { isIncludeAndroidResources = true }
     managedDevices {
-      localDevices {
-      }
-      groups {
-      }
+      localDevices {}
+      groups {}
     }
   }
 
@@ -203,9 +194,7 @@ android {
     isCoreLibraryDesugaringEnabled = true
   }
 
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_21.toString()
-  }
+  kotlinOptions { jvmTarget = JavaVersion.VERSION_21.toString() }
 
   flavorDimensions.add("locationProvider")
   productFlavors {
@@ -216,20 +205,7 @@ android {
         gmsImplementation(libs.play.services.location)
       }
     }
-    create("oss") {
-      dimension = "locationProvider"
-    }
-  }
-  playConfigs {
-    register("gms") {
-      enabled.set(enablePlayPublishing)
-      track.set("internal")
-      if (manuallySetVersion) {
-        resolutionStrategy.set(com.github.triplet.gradle.androidpublisher.ResolutionStrategy.IGNORE)
-      } else {
-        resolutionStrategy.set(com.github.triplet.gradle.androidpublisher.ResolutionStrategy.AUTO)
-      }
-    }
+    create("oss") { dimension = "locationProvider" }
   }
 }
 
@@ -238,9 +214,7 @@ kapt {
   correctErrorTypes = true
 }
 
-ksp {
-  arg("room.schemaLocation", "$projectDir/schemas")
-}
+ksp { arg("room.schemaLocation", "$projectDir/schemas") }
 
 tasks.withType<Test> {
   systemProperties["junit.jupiter.execution.parallel.enabled"] = false
@@ -249,9 +223,7 @@ tasks.withType<Test> {
   maxParallelForks = 1
 }
 
-tasks.withType<JavaCompile>().configureEach {
-  options.isFork = true
-}
+tasks.withType<JavaCompile>().configureEach { options.isFork = true }
 
 dependencies {
   implementation(libs.bundles.kotlin)
@@ -275,9 +247,7 @@ dependencies {
   implementation(libs.bundles.jackson)
   implementation(libs.square.tape2)
   implementation(libs.timber)
-  implementation(libs.libsodium)
   implementation(libs.apache.httpcore)
-  implementation(libs.commons.codec)
   implementation(libs.bundles.androidx.room)
   implementation(libs.bundles.objectbox.migration)
   implementation(libs.kotlin.datetime)
@@ -310,9 +280,7 @@ dependencies {
   androidTestImplementation(libs.hilt.android.testing)
   kaptAndroidTest(libs.hilt.compiler)
 
-  androidTestImplementation(libs.barista) {
-    exclude("org.jetbrains.kotlin")
-  }
+  androidTestImplementation(libs.barista) { exclude("org.jetbrains.kotlin") }
   androidTestImplementation(libs.okhttp.mockwebserver)
   androidTestImplementation(libs.bundles.kmqtt)
   androidTestImplementation(libs.square.leakcanary)
@@ -321,10 +289,4 @@ dependencies {
   androidTestUtil(libs.bundles.androidx.test.util)
 
   coreLibraryDesugaring(libs.desugar)
-}
-
-// Publishing
-// Handled now in the android / playConfigs block
-play {
-  enabled.set(false)
 }
