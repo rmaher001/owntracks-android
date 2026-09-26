@@ -1,0 +1,29 @@
+warning: Binding adapter AK(com.google.android.material.floatingactionbutton.FloatingActionButton, org.owntracks.android.ui.map.MyLocationStatus) already exists for locationIcon! Overriding org.owntracks.android.ui.map.MapActivity.Companion#setIcon with org.owntracks.android.ui.map.MapActivity#setIcon
+warning: Binding adapter AK(com.google.android.material.floatingactionbutton.FloatingActionButton, org.owntracks.android.ui.map.MyLocationStatus) already exists for locationIcon! Overriding org.owntracks.android.ui.map.MapActivity.Companion#setIcon with org.owntracks.android.ui.map.MapActivity#setIcon
+warning: The following options were not recognized by any processor: '[dagger.hilt.internal.useAggregatingRootProcessor, room.schemaLocation, kapt.kotlin.generated, dagger.fastInit, dagger.hilt.android.internal.disableAndroidSuperclassValidation, dagger.hilt.android.internal.projectType]'
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:76:13 Argument type mismatch: actual type is 'TestScope', but 'LocationStuckDetector' was expected.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:77:13 Argument type mismatch: actual type is 'CoroutineDispatcher', but 'CoroutineScope' was expected.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:78:13 Argument type mismatch: actual type is 'SimpleIdlingResource', but 'CoroutineDispatcher' was expected.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:80:13 Argument type mismatch: actual type is 'Boolean', but 'SimpleIdlingResource' was expected.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:80:13 No value passed for parameter 'nativeGeofencingAvailable'.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:130:9 Argument type mismatch: actual type is 'TestScope', but 'LocationStuckDetector' was expected.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:131:9 Argument type mismatch: actual type is 'CoroutineDispatcher', but 'CoroutineScope' was expected.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:132:9 Argument type mismatch: actual type is 'SimpleIdlingResource', but 'CoroutineDispatcher' was expected.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:134:9 Argument type mismatch: actual type is 'Boolean', but 'SimpleIdlingResource' was expected.
+e: file:///private/tmp/claude-501/-Users-richard-dev-unifi-mcp/d7939b93-fee0-48c7-bd56-630d8b09d447/scratchpad/ot/project/app/src/test/java/org/owntracks/android/services/LocationProcessorTest.kt:134:9 No value passed for parameter 'nativeGeofencingAvailable'.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileGmsDebugUnitTestKotlin' (registered by plugin 'com.android.internal.application').
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 2m 47s
+exit=1
